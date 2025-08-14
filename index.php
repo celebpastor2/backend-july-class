@@ -29,6 +29,9 @@
 <body>
     <ul class="menu">
     <?php
+       // $date = Date(format, timestamp);
+       //+ - * / 
+       
         $array = ["one","two", "three", "four", "five", "six","seven", "eight", "nine", "ten"];
         $one  = array_splice($array, rand(0,10), rand(1,5) );
 
@@ -72,7 +75,7 @@
                     return $filtered = array_filter($arr, function($assoc){
                         $price = floatval($_GET["price"]);
                         $prc = floatval( str_replace( ",", "", $assoc['price'] ));
-                        return $price >= $prc;
+                        return strpos($assoc['name'], $price ) + 1;
                     });
                 }, $array);
             }
