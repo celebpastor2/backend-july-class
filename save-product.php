@@ -1,5 +1,5 @@
 <?php
-
+require "config.php";
 
 if(isset($_POST['productName'],$_POST['price'])){
     $product_name = $_POST['productName'];
@@ -10,8 +10,8 @@ if(isset($_POST['productName'],$_POST['price'])){
     
     if( isset( $_FILES['productImage'] )){
         $location = __DIR__ . '/images/' . $_FILES['productImage']['name'];
-        move_uploaded_file($_FILES['productName']['tmp'], $location);
-        $image_url    = $_SERVER['HTTP_HOST'] . '/images/' . $_FILES['productImage']['name'];
+        move_uploaded_file($_FILES['productImage']['tmp_name'], $location);
+        $image_url    = '/images/' . $_FILES['productImage']['name'];
     }
 
     $details = [
@@ -36,6 +36,8 @@ if(isset($_POST['productName'],$_POST['price'])){
     $file = fopen(PRODUCT_LOC, "w");
     fwrite($file, $product_string );
     fclose($file);
+    $url = '/create-product.php';
+    header("Location: $url");
 }
 
 ?>

@@ -24,17 +24,7 @@
         <?php 
             //file system operation
             define("PHP_OPEN", $value);
-            $file = fopen(PRODUCT_LOC, "r");
-            $content = fread( $file, filesize(PRODUCT_LOC));
-
-            $products = json_decode($content, true);//CONVERTS S STRING (JSON) INTO AN ASSOCIATIVE ARRAY OR A OBJECT
-            $keys       = array_keys($products);
-            $arrays     = [];
-
-            foreach( $keys as $key){
-                array_push($arrays, $products[$key]);
-            }
-            $final_products = array_merge(...$arrays);
+            $final_products = get_products();
 
             ?>
             <div class="row">
