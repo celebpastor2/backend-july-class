@@ -24,7 +24,7 @@ if(! isset($_GET['id']) || ! $product ){
 <body>
     <main class="flex">
         <div class="product-image-comtainer">
-            <img src="<?= $product['img']; ?>" alt="<?= $product['name']; ?> Image" class="productImage">
+            <img src="<?= $product['img']; ?>" alt="<?= $product['name']; ?> Image" class="productImage" >
         </div>
         <div class="product-info">
             <div class="product name">

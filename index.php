@@ -75,7 +75,7 @@
                     return $filtered = array_filter($arr, function($assoc){
                         $price = floatval($_GET["price"]);
                         $prc = floatval( str_replace( ",", "", $assoc['price'] ));
-                        return strpos($assoc['name'], $price ) + 1;
+                        return strpos($assoc['price'], $price ) + 1;
                     });
                 }, $array);
             }
