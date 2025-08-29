@@ -1,4 +1,6 @@
 <?php
+
+require "db.php";//make the DB class available here
 class Books {
     //properties
     //methods
@@ -9,7 +11,7 @@ class Books {
     public $ID      = 0;
     protected $shelf = "Main";
     private $db     = "books.json";
-    private $database_type = "file";
+    public $database_type = "database";
     public $isbn    = "";
     public $published_date = "";
     public $thumbnail   = "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ=";
@@ -22,6 +24,7 @@ class Books {
 
 
     public function __construct($id = 0, $title = ""){
+        $this->db = new DB();
         $this->ID = $id;
         $this->title = $title;
         if( $this->database_type == "file" ){
@@ -44,7 +47,34 @@ class Books {
                 $this->short_description = $book['shortDescription'] ??= substr($book['longDescription'], 0, 200);
                 $this->thumbnail = $book['thumbnailUrl'];
             }
+        } else {
+            $data = $this->db->get("Books", ["id" => $id ]);
+
+            if(is_array($data)){
+                $this->ID = $data['id'];
+                $this->title = $data['title'];
+                $this->isbn = $data['isbn'];
+                $this->pageCount = $data['pageCount'];
+                $this->publishedDate = $data['publishedDate'];
+                $this->thumbnail = $data['thumbnailUrl'];
+                $this->shortDesc = $data['shortDescription'];
+                $this->longDesc = $data['longDescription'];
+                $this->status = $data['status'];
+                $this->authors = explode(',', $data['authors'] );
+                $this->categories = explode( ',', $data['categories']);
+                $this->createdAt = strtotime( $data['time'] );
+            }
         }
+    }
+
+    public static function getAll(){
+        $db =  new DB();
+        return $db->getAll("Books");
+    }
+
+    public function create_order(){
+        $this->ID;
+        $this->db->insert();
     }
 
     public function changeName($to){

@@ -1,8 +1,7 @@
 <?php
-require "config.php";
-$products   = get_products();
+require "books.php";
 $id         = (int) $_GET['id'];
-$product    = $products[$id];
+$product    = new Books($id);
 
 $url = $_SERVER['HTTP_HOST'] . "/products.php";
 if(! isset($_GET['id']) || ! $product ){

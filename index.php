@@ -1,8 +1,8 @@
 <?php
-//require "books.php";
+require "books.php";
 
-$books = json_decode( file_get_contents("books.json"), true );
-
+$books = BOOKS::getAll();//called direcctly from the class
+//used majorly as an utility method for the class
 ?>
 
 <!DOCTYPE html>
@@ -213,7 +213,7 @@ $books = json_decode( file_get_contents("books.json"), true );
       </div>
       <div class="content">
         <div class="title"><?= $book['title']; ?></div>
-        <div class="meta"><?= implode(' ', $book['authors'] )  . ' • ' . implode(',', $book['categories'] ); ?></div>
+        <div class="meta"><?=  $book['authors']   . ' • ' .  $book['categories'] ; ?></div>
         <div class="meta" aria-label="Rating">⭐ 4.5 <span style="margin-left:6px;padding:2px 6px;border:1px solid rgba(148,163,184,.25);border-radius:999px">New</span></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
           <span class="price">$<?= rand(50, 100); ?></span>
