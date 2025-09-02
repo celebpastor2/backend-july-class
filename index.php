@@ -1,7 +1,15 @@
 <?php
 require "books.php";
 
+$search = isset( $_REQUEST['search'] ) ? (string) $_REQUEST['search'] : "";
+
+
+
 $books = BOOKS::getAll();//called direcctly from the class
+
+if( $search ){
+  $books = BOOKS::getAll(20, $search);
+}
 //used majorly as an utility method for the class
 ?>
 
@@ -12,102 +20,7 @@ $books = BOOKS::getAll();//called direcctly from the class
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leaf & Ink — Bookstore</title>
-  <style>
-    :root{
-      --bg: #0f172a;          /* slate-900 */
-      --bg-soft:#111827;      /* gray-900 */
-      --panel:#111827;
-      --muted:#94a3b8;        /* slate-400 */
-      --text:#e5e7eb;         /* gray-200 */
-      --primary:#22c55e;      /* green-500 */
-      --primary-700:#15803d;  /* green-700 */
-      --ring: rgba(34,197,94,.35);
-      --card:#0b1220;
-      --accent:#38bdf8;       /* sky-400 */
-      --danger:#ef4444;       /* red-500 */
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --radius: 18px;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:linear-gradient(180deg,#0b1220, #0f172a 30%, #0b1220);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";}
-    a{color:inherit}
-    .container{max-width:1200px;margin:0 auto;padding:0 20px}
-    header{position:sticky;top:0;z-index:40;background:rgba(11,18,32,.8);backdrop-filter:blur(8px);border-bottom:1px solid rgba(148,163,184,.1)}
-    .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
-    .brand{display:flex;align-items:center;gap:.6rem;font-weight:700;letter-spacing:.2px}
-    .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .6rem;border-radius:999px;background:rgba(56,189,248,.12);color:#bae6fd;font-size:.75rem;border:1px solid rgba(56,189,248,.25)}
-    .controls{display:flex;align-items:center;gap:.6rem}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid rgba(148,163,184,.15);background:rgba(255,255,255,.02);color:var(--text);padding:.6rem .9rem;border-radius:12px;font-weight:600;cursor:pointer;transition:.2s;box-shadow:0 0 0 0 var(--ring)}
-    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.04)}
-    .btn.primary{background:linear-gradient(90deg, var(--primary), #16a34a);border-color:transparent;color:white}
-    .btn.primary:hover{filter:saturate(1.1)}
-    .btn.icon{padding:.55rem .7rem}
-    .cart-indicator{position:relative}
-    .cart-count{position:absolute;top:-6px;right:-6px;background:var(--danger);color:white;font-size:.7rem;width:18px;height:18px;border-radius:999px;display:grid;place-items:center}
-
-    /* Hero */
-    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:36px 0 18px}
-    .hero-card{position:relative;border:1px solid rgba(148,163,184,.12);background:radial-gradient(1100px 400px at 10% -20%, rgba(56,189,248,.18), transparent 40%), linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:var(--radius);overflow:hidden;padding:28px;box-shadow:var(--shadow)}
-    .hero h1{font-size:clamp(1.8rem, 1.2rem + 2vw, 3rem);margin:0 0 8px}
-    .hero p{color:var(--muted);margin:0}
-    .searchbar{display:flex;gap:10px;margin-top:18px}
-    .input{flex:1;background:#0a1020;border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:.9rem 1rem;color:var(--text);outline:none;transition:.15s;}
-    .input:focus{border-color:var(--accent);box-shadow:0 0 0 6px rgba(56,189,248,.08)}
-
-    .highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
-    .highlight{border:1px solid rgba(148,163,184,.12);background:rgba(255,255,255,.02);border-radius:16px;padding:14px}
-    .highlight small{display:block;color:var(--muted)}
-    .highlight strong{font-size:1.05rem}
-
-    .promo{border:1px dashed rgba(34,197,94,.4);border-radius:var(--radius);padding:22px;background:linear-gradient(145deg, rgba(34,197,94,.08), rgba(34,197,94,.02));display:flex;flex-direction:column;gap:10px;justify-content:center}
-
-    /* Filters */
-    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:26px 0}
-    .chip{padding:.45rem .8rem;border-radius:999px;border:1px solid rgba(148,163,184,.2);background:rgba(255,255,255,.02);cursor:pointer}
-    .chip.active{border-color:var(--accent);box-shadow:0 0 0 6px rgba(56,189,248,.08)}
-    select{appearance:none;background:#0a1020;border:1px solid rgba(148,163,184,.18);color:var(--text);padding:.6rem .9rem;border-radius:12px}
-
-    /* Grid */
-    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-    .card{border:1px solid rgba(148,163,184,.12);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
-    .cover{height:180px;background:linear-gradient(120deg, rgba(56,189,248,.15), rgba(34,197,94,.12)), radial-gradient(800px 200px at -20% 20%, rgba(56,189,248,.25), transparent 40%), #0a1020;display:grid;place-items:center}
-    .cover img{max-height:100%;max-width:100%;object-fit:cover}
-    .content{padding:14px;display:flex;flex-direction:column;gap:8px}
-    .title{font-weight:700}
-    .meta{color:var(--muted);font-size:.9rem}
-    .price{font-weight:800}
-
-    /* Cart */
-    .drawer{position:fixed;inset:0;pointer-events:none}
-    .drawer .backdrop{position:absolute;inset:0;background:rgba(2,6,23,.6);opacity:0;transition:.2s}
-    .drawer.open .backdrop{opacity:1;pointer-events:auto}
-    .panel{position:absolute;right:-420px;top:0;height:100%;width:400px;background:#0a1020;border-left:1px solid rgba(148,163,184,.12);box-shadow:var(--shadow);transition:.3s;display:flex;flex-direction:column}
-    .drawer.open .panel{right:0;pointer-events:auto}
-    .panel header{position:sticky;top:0;background:rgba(10,16,32,.9);backdrop-filter:blur(6px);border-bottom:1px solid rgba(148,163,184,.12)}
-    .panel h3{margin:0;padding:18px}
-    .cart-list{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
-    .cart-item{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:8px;background:rgba(255,255,255,.02)}
-    .qty{display:inline-flex;align-items:center;border:1px solid rgba(148,163,184,.2);border-radius:10px}
-    .qty button{background:none;border:none;color:var(--text);padding:.2rem .55rem;cursor:pointer}
-    .panel footer{border-top:1px solid rgba(148,163,184,.12);padding:14px;display:grid;gap:10px}
-    .summary{display:flex;justify-content:space-between}
-
-    /* Footer */
-    footer{margin:40px 0 80px;color:var(--muted);font-size:.95rem}
-
-    /* Responsive */
-    @media (max-width: 1024px){
-      .grid{grid-template-columns:repeat(3,1fr)}
-      .hero{grid-template-columns:1fr;}
-    }
-    @media (max-width: 680px){
-      .grid{grid-template-columns:repeat(2,1fr)}
-      .controls .hide-sm{display:none}
-    }
-    @media (max-width: 420px){
-      .grid{grid-template-columns:1fr}
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
@@ -186,7 +99,7 @@ $books = BOOKS::getAll();//called direcctly from the class
     <section>
       <div id="grid" class="grid" aria-live="polite">
         <?php foreach( $books as $book) : ?>
-            
+          <a href="/product/?id=<?= $book['id'] ?>" class="product link">  
             <div class="cover" aria-hidden="true">
         <!--<svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H14a3 3 0 0 1 3 3v14.5c0-1.933-1.567-3.5-3.5-3.5H6.5A2.5 2.5 0 0 1 4 19.5V5.5Z" fill="url(#gc1)"/>
@@ -220,6 +133,7 @@ $books = BOOKS::getAll();//called direcctly from the class
           <button class="btn" aria-label="Add <?= $book['title'] ?> to cart">Add</button>
         </div>
       </div>
+        </a>
         <?php endforeach; ?>
       </div>
     </section>

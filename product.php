@@ -1,9 +1,8 @@
 <?php
-require "books.php";
 $id         = (int) $_GET['id'];
 $product    = new Books($id);
 
-$url = $_SERVER['HTTP_HOST'] . "/products.php";
+$url =  "/products.php";
 if(! isset($_GET['id']) || ! $product ){
     header("Location:$url");
     exit;

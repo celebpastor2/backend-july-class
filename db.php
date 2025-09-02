@@ -71,14 +71,15 @@ class DB {
 
     }
 
-    public function getAll($tableName, $limit = 20, $offset = 0){
+    public function getAll($tableName, $limit = 20, $offset = 0, $search = "%*%"){
         if( ! $this->pdo ){
             return false;
         }
 
-        $stmt = $this->pdo->prepare("SELECT * FROM $tableName LIMIT :limited OFFSET :offseted");
+        $stmt = $this->pdo->prepare("SELECT * FROM $tableName LIMIT :limited OFFSET :offseted LIKE :likes");
         $stmt->bindValue(":limited", $limit, PDO::PARAM_INT);
         $stmt->bindValue(":offseted", $limit, PDO::PARAM_INT);
+        $stmt->bindValue(":likes", $search, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetchAll();
     }

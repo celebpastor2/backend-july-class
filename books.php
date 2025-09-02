@@ -63,13 +63,29 @@ class Books {
                 $this->authors = explode(',', $data['authors'] );
                 $this->categories = explode( ',', $data['categories']);
                 $this->createdAt = strtotime( $data['time'] );
+                $this->totalReviews = rand(5, 5000);
+                $this->price      = rand(10, 100);
+                $this->sale_price = $this->price * 0.2;
             }
         }
     }
 
-    public static function getAll(){
+    public static function getAll($limit = false, $search = ''){
         $db =  new DB();
-        return $db->getAll("Books");
+        if( ! $limit && ! $search ){
+            
+            return $db->getAll("Books");
+        }
+
+        if($limit){
+            $books = $db->getAll("Books", $limit);
+            return $books;
+        }
+
+        if( $search ){
+            $books = $db->getAll("Books", 20, 0, $search);
+        }
+        
     }
 
     public function create_order(){
@@ -87,6 +103,6 @@ class Books {
 }
 
 
-$variable = new Books(2);#runs when an object is initialized
+#$variable = new Books(2);#runs when an object is initialized
 #$variable->changeName("My Name is Phillip");
-echo $variable->title;
+#echo $variable->title;
