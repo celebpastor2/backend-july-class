@@ -144,7 +144,7 @@
 
     <form class="search" role="search" aria-label="Site" action="<?= $_SERVER['HTTP_HOST']; ?>">
       <input type="search" placeholder="Search Books" aria-label="Search" />
-      <button type="submit"><span class="icon" aria-hidden>⌕</span></button>
+      <button type="submit"><span class="icon" aria-hidden>⌕</span></button>       
     </form>
 
     <nav class="actions" aria-label="Quick actions">

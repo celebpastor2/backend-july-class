@@ -49,7 +49,7 @@ if( $search ){
           </button>
           <span class="cart-count" id="cartCount">0</span>
         </div>
-        <button class="btn primary" id="cta">Sign In</button>
+        <button class="btn primary" id="cta" onclick="location.href = '/login'">Sign In</button>
       </div>
     </div>
   </header>
@@ -177,6 +177,7 @@ if( $search ){
   </div>
 
 <script>
+
   // --- Demo data ---
   const CATEGORIES = [
     'All','Fiction','Non‑Fiction','Sci‑Fi','Fantasy','Mystery','Romance','Young Adult','Business','Self‑Help'
@@ -385,6 +386,9 @@ if( $search ){
   // Init
   loadFromURL();
   render();
+
+
+  
 </script>
 </body>
 </html>

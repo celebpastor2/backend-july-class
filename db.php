@@ -71,51 +71,78 @@ class DB {
 
     }
 
-    public function getAll($tableName, $limit = 20, $offset = 0, $search = "%*%"){
+    public function getAll($tableName, $limit = 20, $offset = 0, $search = []){
         if( ! $this->pdo ){
             return false;
         }
+        $sql = "SELECT * FROM $tableName ";
+        $search_holders = [];
 
-        $stmt = $this->pdo->prepare("SELECT * FROM $tableName LIMIT :limited OFFSET :offseted LIKE :likes");
+        if( count($search) > 0 ){
+            $sql .= "WHERE ";
+            foreach($search as $column => $value){
+                $sql .= "$column LIKE %:$column%";
+                array_push($search_holder, ":$column");
+            }
+        }       
+
+        $sql .= "LIMIT :limited OFFSET :offseted";
+
+
+
+        //LIKE :likes LIMIT :limited OFFSET :offseted 
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(":limited", $limit, PDO::PARAM_INT);
         $stmt->bindValue(":offseted", $limit, PDO::PARAM_INT);
-        $stmt->bindValue(":likes", $search, PDO::PARAM_STR);
+       if( count($search) > 0){
+            foreach($search_holder as $holder){
+                $name = str_replace(":", "", $holder);
+                $value = $search[$name];
+                $stmt->bindValue("$holder", "$value");
+            }
+       }
+        
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     public function get( $tableName, array $where = [], array $columns = [], $single = true, $compare = "="){
+        try {
+            if( ! $this->pdo ){
+                return false;
+            }
 
-        if( ! $this->pdo ){
+            if( count($columns) == 0 ){
+                $columns = "*";
+            } else {
+                $columns = implode(",", $columns);
+            }
+            $values = [];
+            if( count($where) == 0){
+                $where = "1=1";
+            } else {
+                $str = "";          
+                foreach($where as $key => $value){
+                    $str .= "$key $compare :$key";
+                    $values[":$key"]   = $value;
+                }
+                $where = $str;
+
+            }
+
+            $stmt = $this->pdo->prepare("SELECT $columns FROM $tableName WHERE $where");
+
+            $stmt->execute($values);
+
+            if($single )
+                return $stmt->fetch(); 
+            
+            return $stmt->fetchAll();
+        } catch(PDOException $e){
             return false;
         }
-
-        if( count($columns) == 0 ){
-            $columns = "*";
-        } else {
-            $columns = implode(",", $columns);
-        }
-        $values = [];
-        if( count($where) == 0){
-            $where = "1=1";
-        } else {
-            $str = "";          
-            foreach($where as $key => $value){
-                $str .= "$key $compare :$key";
-                $values[":$key"]   = $value;
-            }
-            $where = $str;
-
-        }
-
-        $stmt = $this->pdo->prepare("SELECT $columns FROM $tableName WHERE $where");
-
-        $stmt->execute($values);
-
-        if($single )
-            return $stmt->fetch(); 
         
-        return $stmt->fetchAll();
     }
 
     public function __destruct(){
